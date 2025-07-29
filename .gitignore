@@ -208,3 +208,6 @@ __marimo__/
 
 # Json
 *.json
+
+# bats
+*.bat
