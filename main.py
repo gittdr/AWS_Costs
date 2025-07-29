@@ -65,6 +65,10 @@ def obtain_aws_cost():
             {
                 'Type':'DIMENSION',
                 'Key':'SERVICE'
+            },
+            {
+                'Type': 'DIMENSION', 
+                'Key': 'INSTANCE_TYPE'
             }
         ]
     )
@@ -76,15 +80,21 @@ def obtain_aws_cost():
         period = datetime.strptime(monthly_result.get('TimePeriod').get('Start'), "%Y-%m-%d")
         period_date = period.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
         for group in monthly_result.get('Groups'):
+            
             data_group = {
                 'TimePeriod' : period_date,
                 'Service': group.get('Keys')[0],
                 'Amount' : group.get('Metrics').get('UnblendedCost').get('Amount'),
-                'Unit' : group.get('Metrics').get('UnblendedCost').get('Unit')
+                'Unit' : group.get('Metrics').get('UnblendedCost').get('Unit'),
+                'InstanceType': group.get('Keys')[1]
             }
             final_cost.append(data_group)
+    # return cost
     return final_cost
 
 query = os.getenv('QUERY')
-        
 save_to_database(obtain_aws_cost(), query)
+
+# data = obtain_aws_cost()
+# with open('test.json', 'w', encoding='utf-8') as f:
+#     json.dump(data, f, indent=4, ensure_ascii=False)
